@@ -1,0 +1,15 @@
+{
+  "name": "snow",
+  "version": "1.0.0",
+  "main": "client.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@citizenfx/client": "2.0.12092-1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
