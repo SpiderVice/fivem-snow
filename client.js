@@ -1,3 +1,4 @@
+const xmasTreeHash = GetHashKey('prop_xmas_ext');
 const xmasTreeOrigin = [240.82095336914062, -880.853515625, 28.792084503173828];
 
 on('onClientResourceStart', (resource) => {
@@ -6,7 +7,7 @@ on('onClientResourceStart', (resource) => {
         SetSnowLevel(1);
 
         // I don't actually have a clue if this does anything in GTAV but hell it doesn't break anything neither so...
-        LoadCloudHat('Snowy 01', 1);
+        //LoadCloudHat('Snowy 01', 1);
 
         SetForcePedFootstepsTracks(true);
         SetForceVehicleTrails(true);
@@ -14,7 +15,6 @@ on('onClientResourceStart', (resource) => {
         RequestNamedPtfxAsset('core_snow');
 
         if (GetConvar('snow_spawnTree', 'true').match(/^("true"|true)$/i)) {
-            const xmasTreeHash = GetHashKey('prop_xmas_ext');
             RequestModel(xmasTreeHash);
 
             const waitInterval = setInterval(() => {
@@ -26,5 +26,30 @@ on('onClientResourceStart', (resource) => {
                 }
             }, 1500);
         }
+        console.log('[snow] snow enabled');
+    }
+});
+
+on('onResourceStop', (resource) => {
+    if (resource === 'snow') {
+        ClearOverrideWeather();
+        SetSnowLevel(-1.0);
+
+        // Calling this native seems to crash the script no matter how it's used. It's only used 4 times in the whole game, it could be just buggered.
+        //UnloadCloudHat('Snowy 01', 1); 
+
+        SetForcePedFootstepsTracks(false);
+        SetForceVehicleTrails(false);
+        SetRainLevel(0.0);
+        RemoveNamedPtfxAsset('core_snow');
+
+        if (GetConvar('snow_spawnTree', 'true').match(/^("true"|true)$/i)) {
+            if (HasModelLoaded(xmasTreeHash)) {
+                SetModelAsNoLongerNeeded(xmasTreeHash);
+                DeleteObject(xmasTreeHash);
+                console.log('[snow] xmas tree removed');
+            }
+        }
+        console.log('[snow] snow disabled');
     }
 });
