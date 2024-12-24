@@ -1,6 +1,8 @@
 const xmasTreeHash = GetHashKey('prop_xmas_ext');
 const xmasTreeOrigin = [240.82095336914062, -880.853515625, 28.792084503173828];
 
+let treeEntity;
+
 on('onClientResourceStart', (resource) => {
     if (resource === 'snow') {
         SetOverrideWeather('XMAS');
@@ -20,7 +22,7 @@ on('onClientResourceStart', (resource) => {
             const waitInterval = setInterval(() => {
                 if (HasModelLoaded(xmasTreeHash)) {
                     clearInterval(waitInterval);
-                    const treeEntity = CreateObject(xmasTreeHash, ...xmasTreeOrigin, false, false, false);
+                    treeEntity = CreateObject(xmasTreeHash, ...xmasTreeOrigin, false, false, false);
                     FreezeEntityPosition(treeEntity, true);
                     console.log('[snow] xmas tree spawned');
                 }
@@ -44,9 +46,9 @@ on('onResourceStop', (resource) => {
         RemoveNamedPtfxAsset('core_snow');
 
         if (GetConvar('snow_spawnTree', 'true').match(/^("true"|true)$/i)) {
-            if (HasModelLoaded(xmasTreeHash)) {
+            if (DoesEntityExist(treeEntity)) {
+                DeleteObject(treeEntity);
                 SetModelAsNoLongerNeeded(xmasTreeHash);
-                DeleteObject(xmasTreeHash);
                 console.log('[snow] xmas tree removed');
             }
         }
