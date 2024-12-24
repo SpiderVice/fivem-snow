@@ -42,7 +42,7 @@ on('onResourceStop', (resource) => {
 
         SetForcePedFootstepsTracks(false);
         SetForceVehicleTrails(false);
-        SetRainLevel(0.0);
+        SetRainLevel(-1.0);
         RemoveNamedPtfxAsset('core_snow');
 
         if (GetConvar('snow_spawnTree', 'true').match(/^("true"|true)$/i)) {
