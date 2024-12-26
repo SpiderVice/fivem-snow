@@ -6,10 +6,9 @@ let treeEntity;
 on('onClientResourceStart', (resource) => {
     if (resource === 'snow') {
         SetOverrideWeather('XMAS');
-        SetSnowLevel(1);
-
-        // I don't actually have a clue if this does anything in GTAV but hell it doesn't break anything neither so...
-        //LoadCloudHat('Snowy 01', 1);
+        const snowConvar = GetConvar('snow_snowLevel', '0');
+        const snowLevel = (!(snowConvar?.length > 0) || Number.isNaN(Number(snowConvar))) ? 0 : Number(snowConvar);
+        SetSnowLevel(snowLevel);
 
         SetForcePedFootstepsTracks(true);
         SetForceVehicleTrails(true);
@@ -36,9 +35,6 @@ on('onResourceStop', (resource) => {
     if (resource === 'snow') {
         ClearOverrideWeather();
         SetSnowLevel(-1.0);
-
-        // Calling this native seems to crash the script no matter how it's used. It's only used 4 times in the whole game, it could be just buggered.
-        //UnloadCloudHat('Snowy 01', 1); 
 
         SetForcePedFootstepsTracks(false);
         SetForceVehicleTrails(false);
