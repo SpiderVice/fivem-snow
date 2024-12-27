@@ -43,7 +43,7 @@ on('onClientResourceStart', (resource) => {
             RequestModel(xmasTruckDriverHash);
 
             const modelLoadDelay = setInterval(() => {
-                if (HasModelLoaded(xmasTruckHash) || HasModelLoaded(xmasTrailerHash || HasModelLoaded(xmasTruckDriverHash))) {
+                if (HasModelLoaded(xmasTruckHash) || HasModelLoaded(xmasTrailerHash) || HasModelLoaded(xmasTruckDriverHash)) {
                     clearInterval(modelLoadDelay);
 
                     // Create the entities
