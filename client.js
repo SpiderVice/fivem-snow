@@ -36,23 +36,34 @@ on('onClientResourceStart', (resource) => {
 
         //if (GetConvar('snow_spawnHauler', 'true').match(/^("true"|true)$/i)) {
             // Holiday Hauler prototype
+
+            // Load models into memory
             RequestModel(xmasTruckHash);
-            haulerEntity = CreateVehicle(xmasTruckHash, 779.05, -3082.69, 5.2, 360.0, true, false);
-
-            // Fun fact: trailers are "vehicles" themselves, so... this has to happen.
             RequestModel(xmasTrailerHash);
-            haulerTrailerEntity = CreateVehicle(xmasTrailerHash, 779.05, -3082.69, 10.2, 360.0, true, false); // just spawn it 5 units above the cab why not
-            AttachVehicleToTrailer(haulerEntity, haulerTrailerEntity, 10.0); // check for trailers in a 10 unit radius
-
-            SetVehicleDoorsLocked(haulerEntity, 2);
-
             RequestModel(xmasTruckDriverHash);
-            haulerDriver = CreatePedInsideVehicle(haulerEntity, null, xmasTruckDriverHash, -1, true, false);
 
-            TaskVehicleDriveWander(haulerDriver, haulerEntity, 10, 4);
-            PlaySoundFromEntity(-1, "Crate_Beeps", haulerTrailerEntity, "MP_CRATE_DROP_SOUNDS", true, 0); // need xmas soundbank for this
+            const modelLoadDelay = setInterval(() => {
+                if (HasModelLoaded(xmasTruckHash) || HasModelLoaded(xmasTrailerHash || HasModelLoaded(xmasTruckDriverHash))) {
+                    clearInterval(modelLoadDelay);
 
-            console.log('[snow] happy holidays hauler spawned!');
+                    // Create the entities
+                    haulerEntity = CreateVehicle(xmasTruckHash, 779.05, -3082.69, 5.2, 360.0, true, false);
+
+                    // Fun fact: trailers are "vehicles" themselves, so... this has to happen.
+                    haulerTrailerEntity = CreateVehicle(xmasTrailerHash, 779.05, -3082.69, 10.2, 360.0, true, false); // just spawn it 5 units above the cab why not
+                    AttachVehicleToTrailer(haulerEntity, haulerTrailerEntity, 10.0); // check for trailers in a 10 unit radius
+
+                    haulerDriver = CreatePedInsideVehicle(haulerEntity, null, xmasTruckDriverHash, -1, true, false);
+                    
+                    // Setup routing
+                    TaskVehicleDriveWander(haulerDriver, haulerEntity, 10, 4);
+                    
+                    SetVehicleDoorsLocked(haulerEntity, 2);
+                    PlaySoundFromEntity(-1, "Crate_Beeps", haulerTrailerEntity, "MP_CRATE_DROP_SOUNDS", true, 0); // need xmas soundbank for this
+
+                    console.log('[snow] happy holidays hauler spawned!');
+                }
+            }, 1500);
         //}
         
         console.log('[snow] snow enabled');
