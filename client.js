@@ -1,7 +1,13 @@
 const xmasTreeHash = GetHashKey('prop_xmas_ext');
 const xmasTreeOrigin = [240.82095336914062, -880.853515625, 28.792084503173828];
+const xmasTruckHash = GetHashKey('phantom4');
+const xmasTrailerHash = GetHashKey('trailers5');
+const xmasTruckDriverHash = GetHashKey('s_m_m_strperf_01');
 
 let treeEntity;
+let haulerEntity;
+let haulerTrailerEntity;
+let haulerDriver;
 
 on('onClientResourceStart', (resource) => {
     if (resource === 'snow') {
@@ -27,6 +33,28 @@ on('onClientResourceStart', (resource) => {
                 }
             }, 1500);
         }
+
+        //if (GetConvar('snow_spawnHauler', 'true').match(/^("true"|true)$/i)) {
+            // Holiday Hauler prototype
+            RequestModel(xmasTruckHash);
+            haulerEntity = CreateVehicle(xmasTruckHash, 779.05, -3082.69, 5.2, 360.0, true, false);
+
+            // Fun fact: trailers are "vehicles" themselves, so... this has to happen.
+            RequestModel(xmasTrailerHash);
+            haulerTrailerEntity = CreateVehicle(xmasTrailerHash, 779.05, -3082.69, 10.2, 360.0, true, false); // just spawn it 5 units above the cab why not
+            AttachVehicleToTrailer(haulerEntity, haulerTrailerEntity, 10.0); // check for trailers in a 10 unit radius
+
+            SetVehicleDoorsLocked(haulerEntity, 2);
+
+            RequestModel(xmasTruckDriverHash);
+            haulerDriver = CreatePedInsideVehicle(haulerEntity, null, xmasTruckDriverHash, -1, true, false);
+
+            TaskVehicleDriveWander(haulerDriver, haulerEntity, 10, 4);
+            PlaySoundFromEntity(-1, "Crate_Beeps", haulerTrailerEntity, "MP_CRATE_DROP_SOUNDS", true, 0); // need xmas soundbank for this
+
+            console.log('[snow] happy holidays hauler spawned!');
+        //}
+        
         console.log('[snow] snow enabled');
     }
 });
@@ -45,9 +73,22 @@ on('onResourceStop', (resource) => {
             if (DoesEntityExist(treeEntity)) {
                 DeleteObject(treeEntity);
                 SetModelAsNoLongerNeeded(xmasTreeHash);
+
                 console.log('[snow] xmas tree removed');
             }
         }
+
+        if (DoesEntityExist(haulerDriver) && DoesEntityExist(haulerEntity) && DoesEntityExist(haulerTrailerEntity)) {
+            DeletePed(haulerDriver);
+            SetModelAsNoLongerNeeded(xmasTruckDriverHash);
+            DeleteVehicle(haulerTrailerEntity);
+            SetModelAsNoLongerNeeded(xmasTrailerHash);
+            DeleteVehicle(haulerEntity);
+            SetModelAsNoLongerNeeded(xmasTruckHash);
+
+            console.log('[snow] happy holidays hauler removed!');
+        }
+
         console.log('[snow] snow disabled');
     }
 });
